@@ -1,35 +1,100 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState, type ChangeEvent, type KeyboardEvent, } from 'react'
 import './App.css'
+import { Paper, styled, TextField } from '@mui/material'
+import Grid from "@mui/material/Grid";
+
+interface DirectionIndicator {
+  x: number,
+  y: number,
+  direction: string
+}
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [input, setInput] = useState("");
+  const [indicator, setIndicator] = useState<DirectionIndicator | undefined>(undefined);
+  const [userIndicators, setUserIndicators] = useState<DirectionIndicator[]>([]);
+
+  const [indicatorMaps, setIndicatMaps] = useState(Array.from({length: 5}, () => Array(5).fill(null)));
+
+  useEffect(() => {
+    //delete this after
+    console.log({ indicatorMaps })
+  }, [userIndicators]);
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setInput(event.target.value)
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      console.log("Current input:", input);
+      indicatorHelper(input)
+    }
+  }
+
+  const indicatorHelper = (input: string) => {
+    const [coordinate, direction] = input.split(" ")
+    const [x, y] = coordinate.split(",").map(i => Number(i.trim()));
+
+    const newIndicator = { x, y, direction };
+
+    setIndicator(newIndicator);
+    setUserIndicators(prev => (
+      [...prev, newIndicator]
+    ));
+    setInput("");
+
+    setIndicatMaps(prev => {
+      const copy = prev.map(row => [...row]);
+      copy[y][x] = direction;
+      return copy;
+    })
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <TextField
+        id="outlined-basic"
+        variant="outlined"
+        value={input}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown} />
+
+      <br />
+      <br />
+      <MyGrid indicatorMaps={indicatorMaps}/>
     </>
   )
+}
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#fff',
+  ...theme.typography.body2,
+  aspectRatio: "1/1",
+  padding: theme.spacing(2),
+  textAlign: 'center',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: (theme.vars ?? theme).palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}));
+
+function MyGrid({ indicatorMaps }: {indicatorMaps: (string | null)[][]}) {
+  const size = 5;
+  return (<>
+    <div>
+      <Grid container spacing={2} columns={size}  sx={{ width: "50%", margin: "0 auto" }}>
+        {indicatorMaps.flat().map((cell, index) => (
+          <Grid key={index} size={{ xs: 1, sm: 1, md: 1 }}>
+            <Item>{cell ?? ""}</Item>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
+  </>)
 }
 
 export default App

@@ -14,11 +14,11 @@ const MyInput = ({ input, onChange, onKeyDown }: MyInputProps) => {
             variant="outlined"
             value={input}
             onChange={onChange}
-            onKeyDown={onKeyDown} />
+            onKeyDown={onKeyDown} 
+            placeholder="e.g. 1,1 NORTH"
+            />
+            
     )
-
-
-
 };
 
 export default MyInput;

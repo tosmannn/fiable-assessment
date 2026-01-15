@@ -1,8 +1,7 @@
-import { useEffect, useState, type ChangeEvent, type JSX, type KeyboardEvent, } from 'react'
+import { useEffect, useState, type ChangeEvent, type KeyboardEvent, } from 'react'
 import './App.css'
-import { Paper, styled, TextField } from '@mui/material'
-import Grid from "@mui/material/Grid";
-import { ArrowForward, ArrowBack, ArrowUpward, ArrowDownward } from "@mui/icons-material"
+import MyGrid from './components/MyGrid';
+import MyInput from './components/MyInput';
 
 interface DirectionIndicator {
   x: number,
@@ -13,7 +12,6 @@ interface DirectionIndicator {
 
 function App() {
   const [input, setInput] = useState("");
-  const [indicator, setIndicator] = useState<DirectionIndicator | undefined>(undefined);
   const [userIndicators, setUserIndicators] = useState<DirectionIndicator[]>([]);
 
   const [indicatorMaps, setIndicatMaps] = useState(Array.from({ length: 5 }, () => Array(5).fill(null)));
@@ -34,12 +32,11 @@ function App() {
   }
 
   const indicatorHelper = (input: string) => {
-    const [coordinate, direction] = input.split(" ")
+    const [coordinate, direction] = input.trim().split(" ")
     const [x, y] = coordinate.split(",").map(i => Number(i.trim()));
 
     const newIndicator = { x, y, direction };
 
-    setIndicator(newIndicator);
     setUserIndicators(prev => (
       [...prev, newIndicator]
     ));
@@ -54,58 +51,13 @@ function App() {
 
   return (
     <>
-      <TextField
-        id="outlined-basic"
-        variant="outlined"
-        value={input}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown} />
+      <MyInput input={input} onChange={handleChange} onKeyDown={handleKeyDown} />
 
-      <br />
-      <br />
-      <MyGrid indicatorMaps={indicatorMaps} />
+      <div style={{ marginTop: "20px" }}>
+        <MyGrid indicatorMaps={indicatorMaps} />
+      </div >
     </>
   )
-}
+};
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  aspectRatio: "1/1",
-  padding: theme.spacing(2),
-  textAlign: 'center',
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: (theme.vars ?? theme).palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
-  }),
-}));
-
-const directionIcons: Record<string, JSX.Element> = {
-  north: <ArrowUpward />,
-  south: <ArrowDownward />,
-  east: <ArrowForward />,
-  west: <ArrowBack />
-}
-
-function MyGrid({ indicatorMaps }: { indicatorMaps: (string | null)[][] }) {
-  const size = 5;
-  return (<>
-    <div>
-      <Grid container spacing={2} columns={size} sx={{ width: "50%", margin: "0 auto" }}>
-        {indicatorMaps
-          .slice()
-          .reverse()
-          .flat().map((cell, index) => (
-            <Grid key={index} size={{ xs: 1, sm: 1, md: 1 }}>
-              <Item>{cell ? directionIcons[cell.toLocaleLowerCase()] : ""}</Item>
-            </Grid>
-          ))}
-      </Grid>
-    </div>
-  </>)
-}
-
-export default App
+export default App;

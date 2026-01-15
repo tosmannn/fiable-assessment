@@ -46,7 +46,7 @@ function App() {
 
     setIndicatMaps(prev => {
       const copy = prev.map(row => [...row]);
-      copy[y][x] = direction;
+      copy[x][y] = direction;
       return copy;
     })
   }
@@ -87,7 +87,10 @@ function MyGrid({ indicatorMaps }: {indicatorMaps: (string | null)[][]}) {
   return (<>
     <div>
       <Grid container spacing={2} columns={size}  sx={{ width: "50%", margin: "0 auto" }}>
-        {indicatorMaps.flat().map((cell, index) => (
+        {indicatorMaps
+        .slice()
+        .reverse()
+        .flat().map((cell, index) => (
           <Grid key={index} size={{ xs: 1, sm: 1, md: 1 }}>
             <Item>{cell ?? ""}</Item>
           </Grid>

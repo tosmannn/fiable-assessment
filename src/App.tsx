@@ -22,16 +22,22 @@ function App() {
     if (event.key === "Enter") {
       const parsed = parseIndicaotr(input);
 
-      if (parsed) {
-        setIndicatMaps(prev => {
-          const copy = prev.map(row => [...row]);
-
-          if (parsed.x >= 0 && parsed.x < 5 && parsed.y >= 0 && parsed.y < 5) {
-            copy[parsed.x][parsed.y] = parsed.direction;
-          }
-          return copy;
-        })
+      if (!parsed) {
+        alert("Invalid input. Format must be 'x,y DIRECTION' with direction NORTH/EAST/SOUTH/WEST.");
+        return;
       }
+
+      if (parsed.x < 0 || parsed.x > 4 || parsed.y < 0 || parsed.y > 4) {
+        alert("Coordinates must be between 0,0 and 4,4");
+        setInput("");
+        return;
+      }
+
+      setIndicatMaps(prev => {
+        const copy = prev.map(row => [...row]);
+        copy[parsed.x][parsed.y] = parsed.direction;
+        return copy;
+      })
       setInput("");
     }
   }

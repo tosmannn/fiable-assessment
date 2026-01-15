@@ -1,7 +1,8 @@
-import { useEffect, useState, type ChangeEvent, type KeyboardEvent, } from 'react'
+import { useEffect, useState, type ChangeEvent, type JSX, type KeyboardEvent, } from 'react'
 import './App.css'
 import { Paper, styled, TextField } from '@mui/material'
 import Grid from "@mui/material/Grid";
+import { ArrowForward, ArrowBack, ArrowUpward, ArrowDownward } from "@mui/icons-material"
 
 interface DirectionIndicator {
   x: number,
@@ -15,7 +16,7 @@ function App() {
   const [indicator, setIndicator] = useState<DirectionIndicator | undefined>(undefined);
   const [userIndicators, setUserIndicators] = useState<DirectionIndicator[]>([]);
 
-  const [indicatorMaps, setIndicatMaps] = useState(Array.from({length: 5}, () => Array(5).fill(null)));
+  const [indicatorMaps, setIndicatMaps] = useState(Array.from({ length: 5 }, () => Array(5).fill(null)));
 
   useEffect(() => {
     //delete this after
@@ -62,7 +63,7 @@ function App() {
 
       <br />
       <br />
-      <MyGrid indicatorMaps={indicatorMaps}/>
+      <MyGrid indicatorMaps={indicatorMaps} />
     </>
   )
 }
@@ -82,19 +83,26 @@ const Item = styled(Paper)(({ theme }) => ({
   }),
 }));
 
-function MyGrid({ indicatorMaps }: {indicatorMaps: (string | null)[][]}) {
+const directionIcons: Record<string, JSX.Element> = {
+  north: <ArrowUpward />,
+  south: <ArrowDownward />,
+  east: <ArrowForward />,
+  west: <ArrowBack />
+}
+
+function MyGrid({ indicatorMaps }: { indicatorMaps: (string | null)[][] }) {
   const size = 5;
   return (<>
     <div>
-      <Grid container spacing={2} columns={size}  sx={{ width: "50%", margin: "0 auto" }}>
+      <Grid container spacing={2} columns={size} sx={{ width: "50%", margin: "0 auto" }}>
         {indicatorMaps
-        .slice()
-        .reverse()
-        .flat().map((cell, index) => (
-          <Grid key={index} size={{ xs: 1, sm: 1, md: 1 }}>
-            <Item>{cell ?? ""}</Item>
-          </Grid>
-        ))}
+          .slice()
+          .reverse()
+          .flat().map((cell, index) => (
+            <Grid key={index} size={{ xs: 1, sm: 1, md: 1 }}>
+              <Item>{cell ? directionIcons[cell.toLocaleLowerCase()] : ""}</Item>
+            </Grid>
+          ))}
       </Grid>
     </div>
   </>)
